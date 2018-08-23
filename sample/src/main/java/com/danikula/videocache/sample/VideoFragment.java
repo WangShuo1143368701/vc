@@ -58,7 +58,7 @@ public class VideoFragment extends Fragment implements CacheListener {
         //Log.d(LOG_TAG, "Use proxy url " + proxyUrl + " instead of original url " + url);
         //videoView.setVideoPath(proxyUrl);
 
-        //proxy.startCache(url,0,100*1024);
+        //proxy.startCache(url);
         videoView.setVideoPath(proxy.startCacheAndPlay(url));
         videoView.start();
     }

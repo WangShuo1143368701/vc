@@ -15,6 +15,8 @@ public interface Source {
      */
     void open(long offset) throws ProxyCacheException;
 
+    void open(long start , long end) throws ProxyCacheException;
+
     /**
      * Returns length bytes or <b>negative value</b> if length is unknown.
      *

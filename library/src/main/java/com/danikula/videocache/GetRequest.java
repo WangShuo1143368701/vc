@@ -21,10 +21,12 @@ class GetRequest {
 
     private static final Pattern RANGE_HEADER_PATTERN = Pattern.compile("[R,r]ange:[ ]?bytes=(\\d*)-");
     private static final Pattern URL_PATTERN = Pattern.compile("GET /(.*) HTTP");
+    private static final Pattern RANGE_HEADER_ENDOFFSET = Pattern.compile("[R,r]ange:[ ]?bytes=(\\d*)-(\\d*)");
 
     public final String uri;
     public final long rangeOffset;
     public final boolean partial;
+    public final long rangeEndOffset;
 
     public GetRequest(String request) {
         checkNotNull(request);
@@ -33,6 +35,7 @@ class GetRequest {
         this.rangeOffset = Math.max(0, offset);
         this.partial = offset >= 0;
         this.uri = findUri(request);
+        this.rangeEndOffset = findRangeEndOffset(request);
     }
 
     public static GetRequest read(InputStream inputStream) throws IOException {
@@ -49,6 +52,21 @@ class GetRequest {
         Matcher matcher = RANGE_HEADER_PATTERN.matcher(request);
         if (matcher.find()) {
             String rangeValue = matcher.group(1);
+            if(TextUtils.isEmpty(rangeValue)){
+                return 0;
+            }
+            return Long.parseLong(rangeValue);
+        }
+        return -1;
+    }
+
+    private long findRangeEndOffset(String request) {
+        Matcher matcher = RANGE_HEADER_ENDOFFSET.matcher(request);
+        if (matcher.find()) {
+            String rangeValue = matcher.group(2);
+            if(TextUtils.isEmpty(rangeValue)){
+              return -1;
+            }
             return Long.parseLong(rangeValue);
         }
         return -1;

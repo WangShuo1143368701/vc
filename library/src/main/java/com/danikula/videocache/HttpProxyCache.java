@@ -1,7 +1,6 @@
 package com.danikula.videocache;
 
 import android.text.TextUtils;
-
 import com.danikula.videocache.file.FileCache;
 
 import java.io.BufferedOutputStream;
@@ -36,6 +35,7 @@ class HttpProxyCache extends ProxyCache {
     }
 
     public void processRequest(GetRequest request, Socket socket) throws IOException, ProxyCacheException {
+        setRequest(request);
         OutputStream out = new BufferedOutputStream(socket.getOutputStream());
         String responseHeaders = newResponseHeaders(request);
         out.write(responseHeaders.getBytes("UTF-8"));

@@ -66,9 +66,7 @@ class Pinger {
             attempts++;
             timeout *= 2;
         }
-        String error = String.format(Locale.US, "Error pinging server (attempts: %d, max timeout: %d). " +
-                        "If you see this message, please, report at https://github.com/danikula/AndroidVideoCache/issues/134. " +
-                        "Default proxies are: %s"
+        String error = String.format(Locale.US, "Error pinging server (attempts: %d, max timeout: %d). "
                 , attempts, timeout / 2, getDefaultProxies());
         LOG.error(error, new ProxyCacheException(error));
         return false;

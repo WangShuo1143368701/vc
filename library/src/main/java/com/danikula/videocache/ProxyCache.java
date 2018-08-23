@@ -29,6 +29,7 @@ class ProxyCache {
     private volatile Thread sourceReaderThread;
     private volatile boolean stopped;
     private volatile int percentsAvailable = -1;
+    private GetRequest mRequest;
 
     public ProxyCache(Source source, Cache cache) {
         this.source = checkNotNull(source);
@@ -120,7 +121,11 @@ class ProxyCache {
         long offset = 0;
         try {
             offset = cache.available();
-            source.open(offset);
+            if(mRequest != null && offset < mRequest.rangeEndOffset){
+                source.open(offset,mRequest.rangeEndOffset);
+            }else {
+                source.open(offset);
+            }
             sourceAvailable = source.length();
             byte[] buffer = new byte[ProxyCacheUtils.DEFAULT_BUFFER_SIZE];
             int readBytes;
@@ -186,5 +191,13 @@ class ProxyCache {
         public void run() {
             readSource();
         }
+    }
+
+    public void setRequest(GetRequest request){
+        this.mRequest = request;
+    }
+
+    public GetRequest getRequest(){
+        return mRequest;
     }
 }

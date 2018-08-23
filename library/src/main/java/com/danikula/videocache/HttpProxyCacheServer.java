@@ -33,7 +33,7 @@ public class HttpProxyCacheServer {
     private static final String PROXY_HOST = "127.0.0.1";
 
     private final Object clientsLock = new Object();
-    private final ExecutorService socketProcessor = Executors.newFixedThreadPool(5);
+    private final ExecutorService socketProcessor = Executors.newFixedThreadPool(8);
     private final Map<String, HttpProxyCacheServerClients> clientsMap = new ConcurrentHashMap<>();
     private final ServerSocket serverSocket;
     private final int port;
@@ -388,11 +388,7 @@ public class HttpProxyCacheServer {
             }
             try
             {
-                if(startByte >= endByte){
-                    ((HttpUrlSource)source).openConnection(0,-1,-1);
-                }else {
-                    ((HttpUrlSource)source).openConnection(startByte,endByte,-1);
-                }
+              ((HttpUrlSource)source).openConnection(startByte,endByte,-1);
             } catch (ProxyCacheException e)
             {
                 e.printStackTrace();

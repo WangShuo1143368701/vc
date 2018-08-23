@@ -81,6 +81,20 @@ public class HttpUrlSource implements Source {
         }
     }
 
+    @Override
+    public void open(long start , long end) throws ProxyCacheException {
+        try {
+            connection = openConnection(start, end, -1);
+            String mime = connection.getContentType();
+            inputStream = new BufferedInputStream(connection.getInputStream(), DEFAULT_BUFFER_SIZE);
+            long length = readSourceAvailableBytes(connection, start, connection.getResponseCode());
+            this.sourceInfo = new SourceInfo(sourceInfo.url, length, mime);
+            this.sourceInfoStorage.put(sourceInfo.url, sourceInfo);
+        } catch (IOException e) {
+            throw new ProxyCacheException("Error opening connection for " + sourceInfo.url + " with offset " + start, e);
+        }
+    }
+
     private long readSourceAvailableBytes(HttpURLConnection connection, long offset, int responseCode) throws IOException {
         long contentLength = getContentLength(connection);
         return responseCode == HTTP_OK ? contentLength
@@ -189,11 +203,10 @@ public class HttpUrlSource implements Source {
             connection = (HttpURLConnection) new URL(url).openConnection();
             injectCustomHeaders(connection, url);
 
-            connection.setRequestMethod("GET");
-            if(end <= start){
-                connection.setRequestProperty("Range", "bytes=" + start + "-");
-            }else {
+            if(start < end){
                 connection.setRequestProperty("Range", "bytes=" + start + "-" + end);
+            }else if(start > 0) {
+                connection.setRequestProperty("Range", "bytes=" + start + "-");
             }
 
             if (timeout > 0) {
