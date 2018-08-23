@@ -3,11 +3,11 @@ package com.danikula.videocache.sample;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import com.danikula.videocache.CacheListener;
 import com.danikula.videocache.HttpProxyCacheServer;
+import com.danikula.videocache.LogUtils;
 import com.danikula.videocache.widget.media.LiveIjkVideoView;
 import org.androidannotations.annotations.*;
 
@@ -16,8 +16,6 @@ import java.io.File;
 
 @EFragment(R.layout.fragment_video)
 public class VideoFragment extends Fragment implements CacheListener {
-
-    private static final String LOG_TAG = "VideoFragment";
 
     @FragmentArg String url;
 
@@ -58,9 +56,9 @@ public class VideoFragment extends Fragment implements CacheListener {
         //Log.d(LOG_TAG, "Use proxy url " + proxyUrl + " instead of original url " + url);
         //videoView.setVideoPath(proxyUrl);
 
-        //proxy.startCache(url);
-        videoView.setVideoPath(proxy.startCacheAndPlay(url));
-        videoView.start();
+        proxy.startCache(url,0,100*1024);
+        //videoView.setVideoPath(proxy.startCacheAndPlay(url));
+        //videoView.start();
     }
 
     @Override
@@ -70,7 +68,7 @@ public class VideoFragment extends Fragment implements CacheListener {
 
         checkCachedState();
         startVideo();
-        Log.e(LOG_TAG, "======startCache ====");
+        LogUtils.d( "======startCache ====");
     }
 
     @Override
@@ -91,7 +89,7 @@ public class VideoFragment extends Fragment implements CacheListener {
     public void onCacheAvailable(File file, String url, int percentsAvailable) {
         progressBar.setSecondaryProgress(percentsAvailable);
         setCachedState(percentsAvailable == 100);
-        Log.d(LOG_TAG, String.format("onCacheAvailable. percents: %d, file: %s, url: %s", percentsAvailable, file, url));
+        LogUtils.d( String.format("onCacheAvailable. percents: %d, file: %s, url: %s", percentsAvailable, file, url));
 
 //        if(percentsAvailable == 10 && !isFirst){
 //            HttpProxyCacheServer proxy = App.getProxy(getActivity());

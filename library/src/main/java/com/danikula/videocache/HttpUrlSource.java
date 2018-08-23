@@ -1,13 +1,10 @@
 package com.danikula.videocache;
 
 import android.text.TextUtils;
-import android.util.Log;
 import com.danikula.videocache.headers.EmptyHeadersInjector;
 import com.danikula.videocache.headers.HeaderInjector;
 import com.danikula.videocache.sourcestorage.SourceInfoStorage;
 import com.danikula.videocache.sourcestorage.SourceInfoStorageFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -21,14 +18,8 @@ import static com.danikula.videocache.Preconditions.checkNotNull;
 import static com.danikula.videocache.ProxyCacheUtils.DEFAULT_BUFFER_SIZE;
 import static java.net.HttpURLConnection.*;
 
-/**
- * {@link Source} that uses http resource as source for {@link ProxyCache}.
- *
- * @author Alexey Danilov (danikula@gmail.com).
- */
-public class HttpUrlSource implements Source {
 
-    private static final Logger LOG = LoggerFactory.getLogger("HttpUrlSource");
+public class HttpUrlSource implements Source {
 
     private static final int MAX_REDIRECTS = 5;
     private final SourceInfoStorage sourceInfoStorage;
@@ -112,15 +103,10 @@ public class HttpUrlSource implements Source {
             try {
                 connection.disconnect();
             } catch (NullPointerException | IllegalArgumentException e) {
-                String message = "Wait... but why? WTF!? " +
-                        "Really shouldn't happen any more after fixing https://github.com/danikula/AndroidVideoCache/issues/43. " +
-                        "If you read it on your device log, please, notify me danikula@gmail.com or create issue here " +
-                        "https://github.com/danikula/AndroidVideoCache/issues.";
+                String message = "Wait... but why? WTF!? "+e;
                 throw new RuntimeException(message, e);
             } catch (ArrayIndexOutOfBoundsException e) {
-                LOG.error("Error closing connection correctly. Should happen only on Android L. " +
-                        "If anybody know how to fix it, please visit https://github.com/danikula/AndroidVideoCache/issues/88. " +
-                        "Until good solution is not know, just ignore this issue :(", e);
+                LogUtils.e("Error closing connection correctly. "  +e);
             }
         }
     }
@@ -140,7 +126,7 @@ public class HttpUrlSource implements Source {
     }
 
     private void fetchContentInfo() throws ProxyCacheException {
-        LOG.debug("Read content info from " + sourceInfo.url);
+        LogUtils.d("Read content info from " + sourceInfo.url);
         HttpURLConnection urlConnection = null;
         InputStream inputStream = null;
         try {
@@ -150,9 +136,9 @@ public class HttpUrlSource implements Source {
             inputStream = urlConnection.getInputStream();
             this.sourceInfo = new SourceInfo(sourceInfo.url, length, mime);
             this.sourceInfoStorage.put(sourceInfo.url, sourceInfo);
-            LOG.debug("Source info fetched: " + sourceInfo);
+            LogUtils.d("Source info fetched: " + sourceInfo);
         } catch (IOException e) {
-            LOG.error("Error fetching info from " + sourceInfo.url, e);
+            LogUtils.e("Error fetching info from " + sourceInfo.url +" "+ e);
         } finally {
             ProxyCacheUtils.close(inputStream);
             if (urlConnection != null) {
@@ -166,9 +152,8 @@ public class HttpUrlSource implements Source {
         boolean redirected;
         int redirectCount = 0;
         String url = this.sourceInfo.url;
-        Log.e("wangshuo","offset url = "+url);
         do {
-            LOG.debug("Open connection " + (offset > 0 ? " with offset " + offset : "") + " to " + url);
+            LogUtils.d("Open connection " + (offset > 0 ? " with offset " + offset : "") + " to " + url);
             connection = (HttpURLConnection) new URL(url).openConnection();
             injectCustomHeaders(connection, url);
             if (offset > 0) {
@@ -197,9 +182,8 @@ public class HttpUrlSource implements Source {
         boolean redirected;
         int redirectCount = 0;
         String url = this.sourceInfo.url;
-        Log.e("wangshuo","start end = "+url);
         do {
-            LOG.debug("Open connection " + (start > 0 ? " with offset " + start : "") + " to " + url);
+            LogUtils.d("Open connection " + (start > 0 ? " with offset " + start : "") + " to " + url);
             connection = (HttpURLConnection) new URL(url).openConnection();
             injectCustomHeaders(connection, url);
 

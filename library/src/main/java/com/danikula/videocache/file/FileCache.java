@@ -7,11 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-/**
- * {@link Cache} that uses file for storing data.
- *
- * @author Alexey Danilov (danikula@gmail.com).
- */
+
 public class FileCache implements Cache {
 
     private static final String TEMP_POSTFIX = ".download";

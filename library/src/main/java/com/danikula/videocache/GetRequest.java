@@ -1,7 +1,6 @@
 package com.danikula.videocache;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -30,7 +29,7 @@ class GetRequest {
 
     public GetRequest(String request) {
         checkNotNull(request);
-        Log.i("wangshuo","request = "+request);
+        LogUtils.i("request = "+request);
         long offset = findRangeOffset(request);
         this.rangeOffset = Math.max(0, offset);
         this.partial = offset >= 0;
