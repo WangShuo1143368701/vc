@@ -56,9 +56,9 @@ public class VideoFragment extends Fragment implements CacheListener {
         //Log.d(LOG_TAG, "Use proxy url " + proxyUrl + " instead of original url " + url);
         //videoView.setVideoPath(proxyUrl);
 
-        proxy.startCache(url,0,100*1024);
-        //videoView.setVideoPath(proxy.startCacheAndPlay(url));
-        //videoView.start();
+        //proxy.startCache(url,0,300*1024);
+        videoView.setVideoPath(proxy.startCacheAndPlay(url));
+        videoView.start();
     }
 
     @Override
@@ -100,8 +100,8 @@ public class VideoFragment extends Fragment implements CacheListener {
     }
 
     private void updateVideoProgress() {
-        //int videoProgress = videoView.getCurrentPosition() * 100 / videoView.getDuration();
-        //progressBar.setProgress(videoProgress);
+        int videoProgress = videoView.getCurrentPosition() * 100 / videoView.getDuration();
+        progressBar.setProgress(videoProgress);
     }
 
     @SeekBarTouchStop(R.id.progressBar)
