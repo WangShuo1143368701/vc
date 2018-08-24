@@ -167,7 +167,7 @@ public class HttpProxyCacheServer {
     }
 
     public String startCacheAndPlay(String url){
-
+        stopCache(url);
         return getProxyUrl(url);
     }
 
